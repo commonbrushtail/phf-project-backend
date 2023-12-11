@@ -3,14 +3,23 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  Id: number;
 
   @Column()
-  name: string;
+  Username: string;
 
   @Column()
-  email: string;
+  Email: string;
 
   @Column()
-  password: string;
+  PasswordHash: string;
+
+  @Column()
+  CreatedAt: string;
+
+  @Column()
+  AuthProvider: string;
+
+  @Column()
+  IsGuest: boolean;
 }
