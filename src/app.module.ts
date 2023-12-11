@@ -6,8 +6,6 @@ import { User } from './entities/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  // ...
-
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
