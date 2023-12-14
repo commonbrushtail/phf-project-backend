@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -6,20 +11,29 @@ export class User {
   Id: number;
 
   @Column()
-  Username: string;
-
-  @Column()
   Email: string;
 
-  @Column()
-  PasswordHash: string;
+  @Column({ nullable: true })
+  Username: string;
 
-  @Column()
+  @Column({ nullable: true })
+  Firstname: string;
+
+  @Column({ nullable: true })
+  Lastname: string;
+
+  @Column({ nullable: true })
+  GoogleId: boolean;
+
+  @Column({ nullable: true })
+  FacebookId: boolean;
+
+  @Column({ nullable: true })
+  Picture: string;
+
+  @CreateDateColumn()
   CreatedAt: string;
 
-  @Column()
-  AuthProvider: string;
-
-  @Column()
+  @Column({ nullable: true })
   IsGuest: boolean;
 }

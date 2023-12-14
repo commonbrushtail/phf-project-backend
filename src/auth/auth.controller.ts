@@ -10,7 +10,12 @@ export class AuthController {
       const payload = await this.authService.verifyGoogleAuthToken(
         authObject.credential,
       );
-      console.log(payload);
+
+      if (!payload) {
+        return { status: 401, message: 'Unauthorized' };
+      }
+      const user = await this.authService.findOrCreateUser(payload);
+      console.log(user);
     } catch (e) {
       console.log(e);
     }
