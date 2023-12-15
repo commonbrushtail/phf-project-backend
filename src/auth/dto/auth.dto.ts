@@ -1,6 +1,11 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
-export class AuthDto {
+class GoogleAuthDto {
   @IsNotEmpty()
   @IsString()
   credential: string;
@@ -8,3 +13,26 @@ export class AuthDto {
   @IsString()
   clientId: string;
 }
+
+class EmailSignUpDto {
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsStrongPassword({
+    minLength: 8,
+    minUppercase: 1,
+    minLowercase: 1,
+    minNumbers: 1,
+  })
+  password: string;
+}
+
+export { GoogleAuthDto, EmailSignUpDto };

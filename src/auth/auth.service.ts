@@ -8,6 +8,9 @@ import {
   GoogleUserPayload,
   SocialUserPayload,
 } from './interface/auth.interface';
+
+import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class AuthService {
   private oauthClient: OAuth2Client;
@@ -15,6 +18,7 @@ export class AuthService {
   constructor(
     private configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {
     this.oauthClient = new OAuth2Client(configService.get('GOOGLE_CLIENT_ID'));
   }
@@ -66,6 +70,16 @@ export class AuthService {
       }
 
       return user;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async findUserByEmail(email: string) {
+    try {
+      return await this.userRepository.findOne({
+        where: { Email: email },
+      });
     } catch (e) {
       console.log(e);
     }
