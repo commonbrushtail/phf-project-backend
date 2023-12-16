@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { AuthMethod } from './interface/users.interface';
-import { EmailUserPayload } from 'src/auth/interface/auth.interface';
+import {
+  EmailUserPayload,
+  SocialUserPayload,
+} from 'src/auth/interface/auth.interface';
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
@@ -35,29 +38,6 @@ export class UsersService {
     return user.getAuthMethods();
   }
 
-  async createUser(newUserData) {
-    const user = this.userRepository.create(newUserData);
-    await this.userRepository.save(user);
-  }
-
-  async handleCreateUserByEmail(userdata: EmailUserPayload) {
-    const { email, password, username } = userdata;
-    console.log(username);
-    const hashedPassword = await this.hashPassword(password);
-
-    const newUser = this.userRepository.create({
-      Email: email,
-      Password: hashedPassword,
-      Username: username,
-    });
-
-    try {
-      return await this.userRepository.save(newUser);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   async hashPassword(password: string): Promise<string> {
     try {
       const salt = await bcrypt.genSalt();
@@ -67,5 +47,41 @@ export class UsersService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async createUser(user: Partial<User>): Promise<User> {
+    try {
+      return await this.userRepository.save(user);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  async handleCreateUserByEmail(userdata: EmailUserPayload) {
+    const { email, password, username } = userdata;
+    const hashedPassword = await this.hashPassword(password);
+
+    const newUser: Partial<User> = {
+      Email: email,
+      Password: hashedPassword,
+      Username: username,
+    };
+
+    return await this.createUser(newUser);
+  }
+
+  async handleCreateUserByGoogle(userdata: SocialUserPayload) {
+    const { email, firstName, lastName, picture, provider } = userdata;
+
+    const newUser: Partial<User> = {
+      Email: email,
+      Firstname: firstName,
+      Lastname: lastName,
+      Picture: picture,
+      [`${provider}Id`]: true,
+    };
+
+    return await this.createUser(newUser);
   }
 }

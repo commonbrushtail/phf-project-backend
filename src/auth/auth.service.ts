@@ -39,7 +39,7 @@ export class AuthService {
     }
   }
 
-  async transformGooglePayload(payload: GoogleUserPayload) {
+  transformGooglePayload(payload: GoogleUserPayload): SocialUserPayload {
     const { email, given_name, family_name, picture } = payload;
     return {
       email,
@@ -48,22 +48,5 @@ export class AuthService {
       picture,
       provider: 'Google',
     };
-  }
-  async createUser(userPayload: SocialUserPayload) {
-    const { email, firstName, lastName, picture, provider } = userPayload;
-    const userData = {
-      Email: email,
-      FirstName: firstName,
-      Lastname: lastName,
-      Picture: picture,
-    };
-    userData[`${provider}Id`] = provider;
-
-    const user = this.userRepository.create(userData);
-    try {
-      await this.userRepository.save(user);
-    } catch (e) {
-      console.log(e);
-    }
   }
 }

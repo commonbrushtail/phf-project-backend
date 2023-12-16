@@ -27,14 +27,6 @@ export class AuthController {
       }
       const userEmail = await this.userService.findUserByEmail(payload.email);
 
-      //let handle when user sign up first time first
-      if (!userEmail) {
-        const newGoogleUserPayload =
-          this.authService.transformGooglePayload(payload);
-        await this.userService.createUser(newGoogleUserPayload);
-      }
-
-      //if user found check if user has google auth method or other auth method
       if (userEmail) {
         const authMethod = await this.userService.getAuthMethods(userEmail);
         if (!authMethod.google) {
@@ -43,41 +35,57 @@ export class AuthController {
             HttpStatus.UNAUTHORIZED,
           );
         }
+        if (authMethod.google) {
+          //maybe redirect to login method later
+          throw new HttpException(
+            'You already signup with google, please sign in',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+      }
+
+      if (!userEmail) {
+        const userData = this.authService.transformGooglePayload(payload);
+
+        const newGoogleUser =
+          this.userService.handleCreateUserByGoogle(userData);
+        return newGoogleUser;
       }
     } catch (e) {
-      console.log(e);
+      return e;
     }
   }
 
   @Post('signup')
   async signup(@Body() authObject: EmailSignUpDto) {
     const { email } = authObject;
-    console.log(authObject, 'from controller');
     try {
       const userEmail = await this.userService.findUserByEmail(email);
 
       if (userEmail) {
         const authMethod = await this.userService.getAuthMethods(userEmail);
-
         if (!authMethod.emailPassword) {
           throw new HttpException(
             'You have already used this email with another signup method',
             HttpStatus.UNAUTHORIZED,
           );
-        } else {
+        }
+
+        if (authMethod.emailPassword) {
           throw new HttpException(
-            'You have already signup',
+            'You have already used this email to signup',
             HttpStatus.UNAUTHORIZED,
           );
         }
+
+        console.log('runnnnnnnnn');
+        const newUser =
+          await this.userService.handleCreateUserByEmail(authObject);
+
+        return newUser;
       }
-
-      const newUser =
-        await this.userService.handleCreateUserByEmail(authObject);
-
-      return newUser;
     } catch (e) {
-      console.log(e);
+      return e;
     }
   }
 }
