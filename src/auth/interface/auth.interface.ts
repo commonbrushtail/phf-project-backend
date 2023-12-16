@@ -12,3 +12,9 @@ export interface SocialUserPayload {
   picture?: string | undefined;
   provider: string;
 }
+
+export interface EmailUserPayload {
+  email: string;
+  username: string;
+  password: string;
+}

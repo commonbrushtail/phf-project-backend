@@ -17,7 +17,7 @@ class GoogleAuthDto {
 class EmailSignUpDto {
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  username: string;
 
   @IsNotEmpty()
   @IsString()

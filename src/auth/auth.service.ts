@@ -49,37 +49,19 @@ export class AuthService {
       provider: 'Google',
     };
   }
-  async findOrCreateUser(userPayload: SocialUserPayload) {
+  async createUser(userPayload: SocialUserPayload) {
     const { email, firstName, lastName, picture, provider } = userPayload;
+    const userData = {
+      Email: email,
+      FirstName: firstName,
+      Lastname: lastName,
+      Picture: picture,
+    };
+    userData[`${provider}Id`] = provider;
+
+    const user = this.userRepository.create(userData);
     try {
-      let user = await this.userRepository.findOne({
-        where: { Email: userPayload.email },
-      });
-
-      if (!user) {
-        const userData = {
-          Email: email,
-          Firstname: firstName,
-          Lastname: lastName,
-          Picture: picture,
-          [`${provider}Id`]: true,
-        };
-
-        user = this.userRepository.create(userData);
-        await this.userRepository.save(user);
-      }
-
-      return user;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async findUserByEmail(email: string) {
-    try {
-      return await this.userRepository.findOne({
-        where: { Email: email },
-      });
+      await this.userRepository.save(user);
     } catch (e) {
       console.log(e);
     }

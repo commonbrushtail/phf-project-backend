@@ -13,7 +13,7 @@ export class User {
   @Column()
   Email: string;
 
-  @Column()
+  @Column({ nullable: true })
   Password: string;
 
   @Column({ nullable: true })
@@ -39,4 +39,16 @@ export class User {
 
   @Column({ nullable: true })
   IsGuest: boolean;
+
+  getAuthMethods(): {
+    google: boolean;
+    facebook: boolean;
+    emailPassword: boolean;
+  } {
+    return {
+      google: !!this.GoogleId,
+      facebook: !!this.FacebookId,
+      emailPassword: !!this.Password,
+    };
+  }
 }

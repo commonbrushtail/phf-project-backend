@@ -7,10 +7,14 @@ import {
 } from '@nestjs/common';
 import { GoogleAuthDto, EmailSignUpDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
   @Post('google')
   async recieveToken(@Body() authObject: GoogleAuthDto) {
     try {
@@ -21,8 +25,25 @@ export class AuthController {
       if (!payload) {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
-      const user = await this.authService.findOrCreateUser(payload);
-      console.log(user);
+      const userEmail = await this.userService.findUserByEmail(payload.email);
+
+      //let handle when user sign up first time first
+      if (!userEmail) {
+        const newGoogleUserPayload =
+          this.authService.transformGooglePayload(payload);
+        await this.userService.createUser(newGoogleUserPayload);
+      }
+
+      //if user found check if user has google auth method or other auth method
+      if (userEmail) {
+        const authMethod = await this.userService.getAuthMethods(userEmail);
+        if (!authMethod.google) {
+          throw new HttpException(
+            'You have already used this email with another signup method',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+      }
     } catch (e) {
       console.log(e);
     }
@@ -30,12 +51,31 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() authObject: EmailSignUpDto) {
+    const { email } = authObject;
+    console.log(authObject, 'from controller');
     try {
-      const user = await this.authService.findUserByEmail(authObject.email);
-      console.log(user);
-      if (user) {
-        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+      const userEmail = await this.userService.findUserByEmail(email);
+
+      if (userEmail) {
+        const authMethod = await this.userService.getAuthMethods(userEmail);
+
+        if (!authMethod.emailPassword) {
+          throw new HttpException(
+            'You have already used this email with another signup method',
+            HttpStatus.UNAUTHORIZED,
+          );
+        } else {
+          throw new HttpException(
+            'You have already signup',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
       }
+
+      const newUser =
+        await this.userService.handleCreateUserByEmail(authObject);
+
+      return newUser;
     } catch (e) {
       console.log(e);
     }
