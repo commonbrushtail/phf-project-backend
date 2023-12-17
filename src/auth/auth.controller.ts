@@ -4,8 +4,9 @@ import {
   Post,
   HttpException,
   HttpStatus,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { GoogleAuthDto, EmailSignUpDto } from './dto/auth.dto';
+import { GoogleAuthDto, EmailSignUpDto, EmailSignInDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 
@@ -85,6 +86,36 @@ export class AuthController {
       const userSessionData =
         this.authService.generateSessionDataForUser(newUser);
 
+      return userSessionData;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  @Post('email-login')
+  async emailLogin(@Body() authObject: EmailSignInDto) {
+    try {
+      const user = await this.userService.findUserByEmail(authObject.email);
+
+      if (!user) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const passwordMatch = await this.userService.comparePassword(
+        authObject.password,
+        user.Password,
+      );
+
+      if (!passwordMatch) {
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      }
+
+      const authMethod = await this.userService.getAuthMethods(user);
+      if (!authMethod.email) {
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      }
+
+      const userSessionData = this.authService.generateSessionDataForUser(user);
       return userSessionData;
     } catch (e) {
       return e;

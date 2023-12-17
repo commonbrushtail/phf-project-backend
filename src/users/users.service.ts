@@ -84,4 +84,16 @@ export class UsersService {
 
     return await this.createUser(newUser);
   }
+
+  async comparePassword(
+    enteredPassword: string,
+    storedHashedPassword: string,
+  ): Promise<boolean> {
+    try {
+      return await bcrypt.compare(enteredPassword, storedHashedPassword);
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 }
