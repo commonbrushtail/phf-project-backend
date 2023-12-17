@@ -44,13 +44,13 @@ export class AuthController {
         }
       }
 
-      if (!userEmail) {
-        const userData = this.authService.transformGooglePayload(payload);
+      const newUser =
+        await this.authService.createUserFromGooglePayload(payload);
 
-        const newGoogleUser =
-          this.userService.handleCreateUserByGoogle(userData);
-        return newGoogleUser;
-      }
+      const userSessionData =
+        this.authService.generateSessionDataForUser(newUser);
+
+      return userSessionData;
     } catch (e) {
       return e;
     }
@@ -59,30 +59,33 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() authObject: EmailSignUpDto) {
     const { email } = authObject;
+    console.log(authObject);
     try {
       const userEmail = await this.userService.findUserByEmail(email);
 
       if (userEmail) {
         const authMethod = await this.userService.getAuthMethods(userEmail);
-        if (!authMethod.emailPassword) {
+        if (!authMethod.email) {
           throw new HttpException(
             'You have already used this email with another signup method',
             HttpStatus.UNAUTHORIZED,
           );
         }
 
-        if (authMethod.emailPassword) {
+        if (authMethod.email) {
           throw new HttpException(
             'You have already used this email to signup',
             HttpStatus.UNAUTHORIZED,
           );
         }
-
-        const newUser =
-          await this.userService.handleCreateUserByEmail(authObject);
-
-        return newUser;
       }
+      const newUser =
+        await this.userService.handleCreateUserByEmailPassword(authObject);
+
+      const userSessionData =
+        this.authService.generateSessionDataForUser(newUser);
+
+      return userSessionData;
     } catch (e) {
       return e;
     }

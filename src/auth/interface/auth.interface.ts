@@ -18,3 +18,21 @@ export interface EmailUserPayload {
   username: string;
   password: string;
 }
+
+export interface UserData {
+  email: string;
+  username: string;
+  isGuest: boolean;
+  emailId: boolean;
+  googleId: boolean;
+  facebookId: boolean;
+}
+
+export interface JwtPayload {
+  sub: string;
+  iat: number;
+}
+export interface UserSessionData {
+  userData: UserData;
+  access_token: string;
+}

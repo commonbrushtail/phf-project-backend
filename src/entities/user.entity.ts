@@ -32,6 +32,9 @@ export class User {
   FacebookId: boolean;
 
   @Column({ nullable: true })
+  EmailId: boolean;
+
+  @Column({ nullable: true })
   Picture: string;
 
   @CreateDateColumn()
@@ -43,12 +46,12 @@ export class User {
   getAuthMethods(): {
     google: boolean;
     facebook: boolean;
-    emailPassword: boolean;
+    email: boolean;
   } {
     return {
       google: !!this.GoogleId,
       facebook: !!this.FacebookId,
-      emailPassword: !!this.Password,
+      email: !!this.EmailId,
     };
   }
 }

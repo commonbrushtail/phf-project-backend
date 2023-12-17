@@ -58,19 +58,6 @@ export class UsersService {
     }
   }
 
-  async handleCreateUserByEmail(userdata: EmailUserPayload) {
-    const { email, password, username } = userdata;
-    const hashedPassword = await this.hashPassword(password);
-
-    const newUser: Partial<User> = {
-      Email: email,
-      Password: hashedPassword,
-      Username: username,
-    };
-
-    return await this.createUser(newUser);
-  }
-
   async handleCreateUserByGoogle(userdata: SocialUserPayload) {
     const { email, firstName, lastName, picture, provider } = userdata;
 
@@ -80,6 +67,19 @@ export class UsersService {
       Lastname: lastName,
       Picture: picture,
       [`${provider}Id`]: true,
+    };
+
+    return await this.createUser(newUser);
+  }
+
+  async handleCreateUserByEmailPassword(userdata: EmailUserPayload) {
+    const { email, username, password } = userdata;
+    const hashedPassword = await this.hashPassword(password);
+    const newUser: Partial<User> = {
+      Email: email,
+      Username: username,
+      Password: hashedPassword,
+      EmailId: true,
     };
 
     return await this.createUser(newUser);
