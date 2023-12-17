@@ -49,4 +49,6 @@ export class AuthService {
       provider: 'Google',
     };
   }
+
+  async generateJwtToken(user: User) {
 }

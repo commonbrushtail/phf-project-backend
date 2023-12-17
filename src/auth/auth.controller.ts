@@ -78,7 +78,6 @@ export class AuthController {
           );
         }
 
-        console.log('runnnnnnnnn');
         const newUser =
           await this.userService.handleCreateUserByEmail(authObject);
 
