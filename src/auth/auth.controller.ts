@@ -9,6 +9,7 @@ import {
 import { GoogleAuthDto, EmailSignUpDto, EmailSignInDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
+import { Public } from 'src/decorator/isPublic';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +17,8 @@ export class AuthController {
     private authService: AuthService,
     private userService: UsersService,
   ) {}
+
+  @Public()
   @Post('google')
   async recieveToken(@Body() authObject: GoogleAuthDto) {
     try {
@@ -57,6 +60,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('signup')
   async signup(@Body() authObject: EmailSignUpDto) {
     const { email } = authObject;
@@ -91,7 +95,7 @@ export class AuthController {
       return e;
     }
   }
-
+  @Public()
   @Post('email-login')
   async emailLogin(@Body() authObject: EmailSignInDto) {
     try {
