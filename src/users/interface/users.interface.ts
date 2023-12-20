@@ -3,3 +3,7 @@ export class AuthMethod {
   facebook: boolean;
   email: boolean;
 }
+
+export class newUsernameRequest {
+  newUsername: string;
+}

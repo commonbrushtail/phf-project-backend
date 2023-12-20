@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { AuthMethod } from './interface/users.interface';
+import { changeUsernameDto } from './dto/user.dto';
+import { BadRequestException } from '@nestjs/common';
 import {
   EmailUserPayload,
   SocialUserPayload,
@@ -58,9 +60,16 @@ export class UsersService {
     }
   }
 
-  async updateUsername(user: User, newUsername: string): Promise<User> {
+  async updateUsername(user: User, payload: changeUsernameDto): Promise<User> {
     try {
-      user.Username = newUsername;
+      if (user.Username === payload.newUsername) {
+        throw new BadRequestException(
+          'Your new username is the same as before',
+        );
+      }
+
+      user.Username = payload.newUsername;
+
       return await this.userRepository.save(user);
     } catch (e) {
       console.log(e);

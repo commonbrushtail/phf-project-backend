@@ -1,3 +1,5 @@
+import { User } from 'src/entities/user.entity';
+
 export interface GoogleUserPayload {
   email?: string | undefined;
   given_name?: string | undefined;
@@ -37,6 +39,6 @@ export interface UserSessionData {
   access_token: string;
 }
 
-export interface UserDataRequest extends Request {
-  userData: UserData;
+export interface UserWithReqeust extends Request {
+  user: User;
 }
