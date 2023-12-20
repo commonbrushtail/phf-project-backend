@@ -36,3 +36,7 @@ export interface UserSessionData {
   userData: UserData;
   access_token: string;
 }
+
+export interface UserDataRequest extends Request {
+  userData: UserData;
+}
