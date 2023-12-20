@@ -54,7 +54,11 @@ export class AuthController {
       const userSessionData =
         this.authService.generateSessionDataForUser(newUser);
 
-      return userSessionData;
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Google signup successfully.',
+      };
     } catch (e) {
       return e;
     }
@@ -90,7 +94,11 @@ export class AuthController {
       const userSessionData =
         this.authService.generateSessionDataForUser(newUser);
 
-      return userSessionData;
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Email signup successfully.',
+      };
     } catch (e) {
       return e;
     }
@@ -120,7 +128,11 @@ export class AuthController {
       }
 
       const userSessionData = this.authService.generateSessionDataForUser(user);
-      return userSessionData;
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Email login successfully.',
+      };
     } catch (e) {
       return e;
     }
