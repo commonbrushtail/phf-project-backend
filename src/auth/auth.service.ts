@@ -59,6 +59,7 @@ export class AuthService {
       emailId: user.EmailId,
       username: user.Username,
       isGuest: user.IsGuest,
+      isEmailVerified: user.IsEmailVerified,
     };
   }
   generateJwtPayload(email: UserData): JwtPayload {

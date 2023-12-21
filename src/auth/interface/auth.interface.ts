@@ -28,6 +28,7 @@ export interface UserData {
   emailId: boolean;
   googleId: boolean;
   facebookId: boolean;
+  isEmailVerified: boolean;
 }
 
 export interface JwtPayload {

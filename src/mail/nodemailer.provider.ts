@@ -1,6 +1,6 @@
 import * as nodemailer from 'nodemailer';
 export const NodemailerProvider = {
-  provide: 'NodemailerTransporter1',
+  provide: 'NodemailerTransporter',
   useFactory: () => {
     return nodemailer.createTransport({
       host: 'sandbox.smtp.mailtrap.io',

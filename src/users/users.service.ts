@@ -99,6 +99,7 @@ export class UsersService {
       Username: username,
       Password: hashedPassword,
       EmailId: true,
+      IsEmailVerified: false,
     };
 
     return await this.createUser(newUser);

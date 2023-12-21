@@ -4,7 +4,7 @@ import * as nodemailer from 'nodemailer';
 export class MailService {
   private transporter: nodemailer.Transporter;
   constructor(
-    @Inject('NodemailerTransporter1')
+    @Inject('NodemailerTransporter')
     private nodemailerTransporter: nodemailer.Transporter,
   ) {}
   async sendMail(to: string, subject: string, text: string, html: string) {
@@ -17,5 +17,12 @@ export class MailService {
     };
 
     await this.nodemailerTransporter.sendMail(mailOptions);
+  }
+
+  async sendConfirmationEmail(to: string, token: string) {
+    const subject = 'Confirm your email';
+    const text = 'Confirm your email';
+    const html = `<a href="http://localhost:3000/auth/confirm-email/${token}">Confirm your email</a>`;
+    await this.sendMail(to, subject, text, html);
   }
 }

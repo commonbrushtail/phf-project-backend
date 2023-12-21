@@ -43,6 +43,9 @@ export class User {
   @Column({ nullable: true })
   IsGuest: boolean;
 
+  @Column({})
+  IsEmailVerified: boolean;
+
   getAuthMethods(): {
     google: boolean;
     facebook: boolean;

@@ -10,12 +10,14 @@ import { GoogleAuthDto, EmailSignUpDto, EmailSignInDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { Public } from 'src/decorator/isPublic';
+import { MailService } from 'src/mail/mail.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UsersService,
+    private mailService: MailService,
   ) {}
 
   @Public()
@@ -92,13 +94,20 @@ export class AuthController {
         await this.userService.handleCreateUserByEmailPassword(authObject);
 
       const userSessionData =
-        this.authService.generateSessionDataForUser(newUser);
+        await this.authService.generateSessionDataForUser(newUser);
 
-      return {
-        status: 'success',
-        data: userSessionData,
-        message: 'Email signup successfully.',
-      };
+      Promise.all([
+        this.mailService.sendConfirmationEmail(
+          userSessionData.userData.email,
+          '123456',
+        ),
+      ]).then(() => {
+        return {
+          status: 'success',
+          data: userSessionData,
+          message: 'Email signup successfully.',
+        };
+      });
     } catch (e) {
       return e;
     }

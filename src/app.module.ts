@@ -9,7 +9,6 @@ import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/jwt.guard';
 import { MailModule } from './mail/mail.module';
-import { Nodemailer } from './nodemailer/nodemailer';
 
 @Module({
   imports: [
@@ -35,10 +34,6 @@ import { Nodemailer } from './nodemailer/nodemailer';
     MailModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
-    Nodemailer,
-  ],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}
