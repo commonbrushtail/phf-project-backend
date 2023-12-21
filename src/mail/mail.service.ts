@@ -1,18 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-
 @Injectable()
 export class MailService {
-  constructor(private transporter: nodemailer.Transporter) {
-    this.transporter = nodemailer.createTransport({
-      host: 'sandbox.smtp.mailtrap.io',
-      port: 2525,
-      auth: {
-        user: 'fd5915c57c45c7',
-        pass: '787658cb80df74',
-      },
-    });
-  }
+  private transporter: nodemailer.Transporter;
+  constructor(
+    @Inject('NodemailerTransporter1')
+    private nodemailerTransporter: nodemailer.Transporter,
+  ) {}
   async sendMail(to: string, subject: string, text: string, html: string) {
     const mailOptions = {
       from: 'your.email@gmail.com',
@@ -22,6 +16,6 @@ export class MailService {
       html: html,
     };
 
-    await this.transporter.sendMail(mailOptions);
+    await this.nodemailerTransporter.sendMail(mailOptions);
   }
 }
