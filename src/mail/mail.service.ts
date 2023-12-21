@@ -19,7 +19,7 @@ export class MailService {
     await this.nodemailerTransporter.sendMail(mailOptions);
   }
 
-  async sendConfirmationEmail(to: string, token: string) {
+  async sendConfirmationEmail(to: string, token: string): Promise<void> {
     const subject = 'Confirm your email';
     const text = 'Confirm your email';
     const html = `<a href="http://localhost:3000/auth/confirm-email/${token}">Confirm your email</a>`;

@@ -103,4 +103,18 @@ export class AuthService {
     const jwtToken = await this.generateJwtToken(jwtPayload);
     return this.generateUserSessionData(userData, jwtToken);
   }
+
+  generateConfirmationEmailWithJWT(user: User): string {
+    const confirmationToken = this.jwtService.sign(
+      {
+        email: user.Email,
+      },
+      {
+        secret: this.configService.get('JWT_SECRET'),
+        expiresIn: '3d',
+      },
+    );
+
+    return confirmationToken;
+  }
 }

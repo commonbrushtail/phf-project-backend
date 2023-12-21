@@ -70,7 +70,6 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() authObject: EmailSignUpDto) {
     const { email } = authObject;
-    console.log(authObject);
     try {
       const userEmail = await this.userService.findUserByEmail(email);
 
@@ -96,20 +95,24 @@ export class AuthController {
       const userSessionData =
         await this.authService.generateSessionDataForUser(newUser);
 
-      Promise.all([
+      const confirmEmailToken =
+        this.authService.generateConfirmationEmailWithJWT(newUser);
+
+      await Promise.all([
         this.mailService.sendConfirmationEmail(
           userSessionData.userData.email,
-          '123456',
+          confirmEmailToken,
         ),
-      ]).then(() => {
-        return {
-          status: 'success',
-          data: userSessionData,
-          message: 'Email signup successfully.',
-        };
-      });
+      ]);
+
+      console.log('Email sent');
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Email signup successfully.',
+      };
     } catch (e) {
-      return e;
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   @Public()
