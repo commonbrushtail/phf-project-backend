@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { User } from 'src/entities/user.entity';
@@ -116,5 +116,26 @@ export class AuthService {
     );
 
     return confirmationToken;
+  }
+
+  async handleConfirmEmail(confirmationToken: string): Promise<User> {
+    let decodedToken;
+    try {
+      decodedToken = await this.jwtService.verify(confirmationToken, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+    } catch (e) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    const user = await this.usersService.findUserByEmail(decodedToken.email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    user.IsEmailVerified = true;
+    const newUserData = await this.usersService.updateUser(user);
+
+    return newUserData;
   }
 }

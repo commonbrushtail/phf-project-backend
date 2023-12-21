@@ -76,6 +76,14 @@ export class UsersService {
       throw e;
     }
   }
+  async updateUser(user: User): Promise<User> {
+    try {
+      return await this.userRepository.save(user);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
 
   async handleCreateUserByGoogle(userdata: SocialUserPayload) {
     const { email, firstName, lastName, picture, provider } = userdata;
