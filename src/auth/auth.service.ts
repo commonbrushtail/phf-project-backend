@@ -12,8 +12,6 @@ import {
 } from './interface/auth.interface';
 
 import { JwtService } from '@nestjs/jwt';
-import { EmailConfirmDto } from './dto/auth.dto';
-import { JwtVerifyOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
