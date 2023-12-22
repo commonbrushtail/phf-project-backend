@@ -54,4 +54,10 @@ class EmailSignInDto {
   password: string;
 }
 
-export { GoogleAuthDto, EmailSignUpDto, EmailSignInDto };
+class EmailConfirmDto {
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+}
+
+export { GoogleAuthDto, EmailSignUpDto, EmailSignInDto, EmailConfirmDto };

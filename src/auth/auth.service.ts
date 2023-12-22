@@ -12,6 +12,8 @@ import {
 } from './interface/auth.interface';
 
 import { JwtService } from '@nestjs/jwt';
+import { EmailConfirmDto } from './dto/auth.dto';
+import { JwtVerifyOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -118,10 +120,10 @@ export class AuthService {
     return confirmationToken;
   }
 
-  async handleConfirmEmail(confirmationToken: string): Promise<User> {
+  async handleConfirmEmail(token: string): Promise<User> {
     let decodedToken;
     try {
-      decodedToken = await this.jwtService.verify(confirmationToken, {
+      decodedToken = await this.jwtService.verify(token, {
         secret: this.configService.get('JWT_SECRET'),
       });
     } catch (e) {

@@ -6,7 +6,12 @@ import {
   HttpStatus,
   UnauthorizedException,
 } from '@nestjs/common';
-import { GoogleAuthDto, EmailSignUpDto, EmailSignInDto } from './dto/auth.dto';
+import {
+  GoogleAuthDto,
+  EmailSignUpDto,
+  EmailSignInDto,
+  EmailConfirmDto,
+} from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { Public } from 'src/decorator/isPublic';
@@ -147,6 +152,22 @@ export class AuthController {
       };
     } catch (e) {
       return e;
+    }
+  }
+
+  @Public()
+  @Post('confirm-email')
+  async confirmEmail(@Body() emailConfirmDto: EmailConfirmDto) {
+    const { token } = emailConfirmDto;
+
+    try {
+      const updatedUser = await this.authService.handleConfirmEmail(token);
+      const userSessionData =
+        this.authService.generateSessionDataForUser(updatedUser);
+
+      return userSessionData;
+    } catch (e) {
+      new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
