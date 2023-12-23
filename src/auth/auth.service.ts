@@ -53,6 +53,7 @@ export class AuthService {
 
   generateUserData(user: User): UserData {
     return {
+      id: user.Id,
       email: user.Email,
       facebookId: user.FacebookId,
       googleId: user.GoogleId,
@@ -62,10 +63,11 @@ export class AuthService {
       isEmailVerified: user.IsEmailVerified,
     };
   }
-  generateJwtPayload(email: UserData): JwtPayload {
+  generateJwtPayload(user: UserData): JwtPayload {
     try {
       const payload: JwtPayload = {
-        sub: email.email,
+        sub: user.email,
+        id: user.id,
         iat: Date.now(),
       };
       return payload;

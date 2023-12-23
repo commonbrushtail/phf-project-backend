@@ -165,9 +165,31 @@ export class AuthController {
       const userSessionData =
         this.authService.generateSessionDataForUser(updatedUser);
 
-      return userSessionData;
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Email confirm successfully.',
+      };
     } catch (e) {
       new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Public()
+  @Post('guest-login')
+  async guestLogin() {
+    try {
+      const guestUser = await this.userService.handleCreateGuestUser();
+      const userSessionData =
+        await this.authService.generateSessionDataForUser(guestUser);
+
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Guest login successfully.',
+      };
+    } catch (e) {
+      return e;
     }
   }
 }

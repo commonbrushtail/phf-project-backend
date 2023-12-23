@@ -22,6 +22,7 @@ export interface EmailUserPayload {
 }
 
 export interface UserData {
+  id: string;
   email: string;
   username: string;
   isGuest: boolean;
@@ -33,6 +34,7 @@ export interface UserData {
 
 export interface JwtPayload {
   sub: string;
+  id: string;
   iat: number;
 }
 export interface UserSessionData {

@@ -10,7 +10,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   Id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   Email: string;
 
   @Column({ nullable: true })
@@ -43,7 +43,7 @@ export class User {
   @Column({ nullable: true })
   IsGuest: boolean;
 
-  @Column({})
+  @Column({ nullable: true })
   IsEmailVerified: boolean;
 
   getAuthMethods(): {

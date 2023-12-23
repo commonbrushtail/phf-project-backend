@@ -36,6 +36,17 @@ export class UsersService {
     }
   }
 
+  async findUserById(id: string) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { Id: id },
+      });
+      return user;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getAuthMethods(user: User): Promise<AuthMethod> {
     return user.getAuthMethods();
   }
@@ -123,5 +134,13 @@ export class UsersService {
       console.log(e);
       return false;
     }
+  }
+
+  async handleCreateGuestUser() {
+    const newUser: Partial<User> = {
+      IsGuest: true,
+    };
+
+    return await this.createUser(newUser);
   }
 }
