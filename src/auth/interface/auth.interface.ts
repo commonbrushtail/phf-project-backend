@@ -34,7 +34,6 @@ export interface UserData {
 
 export interface JwtPayload {
   sub: string;
-  id: string;
   iat: number;
 }
 export interface UserSessionData {

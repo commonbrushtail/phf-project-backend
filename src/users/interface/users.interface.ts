@@ -10,8 +10,7 @@ export class newUsernameRequest {
   newUsername: string;
 }
 
-export class newUsernameResponse {
-  status: string;
+export class newUsernameResponse extends Response {
   data: UserSessionData;
   message: string;
 }

@@ -10,9 +10,8 @@ import {
   UserData,
   UserSessionData,
 } from './interface/auth.interface';
-
+import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
-
 @Injectable()
 export class AuthService {
   private oauthClient: OAuth2Client;
@@ -22,6 +21,19 @@ export class AuthService {
     private usersService: UsersService,
   ) {
     this.oauthClient = new OAuth2Client(configService.get('GOOGLE_CLIENT_ID'));
+  }
+
+  setAccessTokenCookie(
+    response: Response,
+    accessToken: string,
+    expireInDay: number = 3,
+  ): Response {
+    return response.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * expireInDay),
+    });
   }
 
   async verifyGoogleAuthToken(idToken: string) {
@@ -66,8 +78,7 @@ export class AuthService {
   generateJwtPayload(user: UserData): JwtPayload {
     try {
       const payload: JwtPayload = {
-        sub: user.email,
-        id: user.id,
+        sub: user.id,
         iat: Date.now(),
       };
       return payload;
