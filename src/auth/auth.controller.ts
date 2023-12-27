@@ -16,7 +16,6 @@ import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { Public } from 'src/decorator/isPublic';
 import { MailService } from 'src/mail/mail.service';
-
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -36,10 +35,10 @@ export class AuthController {
       if (!payload) {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
-      const userEmail = await this.userService.findUserByEmail(payload.email);
+      const user = await this.userService.findUserByEmail(payload.email);
 
-      if (userEmail) {
-        const authMethod = await this.userService.getAuthMethods(userEmail);
+      if (user) {
+        const authMethod = await this.userService.getAuthMethods(user);
         if (!authMethod.google) {
           throw new HttpException(
             'You have already used this email with another signup method',
@@ -47,11 +46,18 @@ export class AuthController {
           );
         }
         if (authMethod.google) {
-          //maybe redirect to login method later
-          throw new HttpException(
-            'You already signup with google, please sign in',
-            HttpStatus.UNAUTHORIZED,
-          );
+          const userSessionData =
+            await this.authService.generateSessionDataForUser(user);
+          return {
+            status: 'success',
+            data: userSessionData,
+            message: 'Google login successfully.',
+          };
+
+          // throw new HttpException(
+          //   'You already signup with google, please sign in',
+          //   HttpStatus.UNAUTHORIZED,
+          // );
         }
       }
 
@@ -59,7 +65,7 @@ export class AuthController {
         await this.authService.createUserFromGooglePayload(payload);
 
       const userSessionData =
-        this.authService.generateSessionDataForUser(newUser);
+        await this.authService.generateSessionDataForUser(newUser);
 
       return {
         status: 'success',

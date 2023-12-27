@@ -6,9 +6,10 @@ import { User } from './entities/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/jwt.guard';
 import { MailModule } from './mail/mail.module';
+import { RespondCookieInterceptor } from './interceptor/respond-cookie/respond-cookie-interceptor';
 
 @Module({
   imports: [
@@ -34,6 +35,10 @@ import { MailModule } from './mail/mail.module';
     MailModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_INTERCEPTOR, useClass: RespondCookieInterceptor },
+  ],
 })
 export class AppModule {}
