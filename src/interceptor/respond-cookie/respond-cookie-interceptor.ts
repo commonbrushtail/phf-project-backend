@@ -21,12 +21,10 @@ export class RespondCookieInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse();
 
     if (noCookieInterceptor) {
-      // console.log('no cookie run');
       return next.handle();
     }
 
     if (response) {
-      // console.log('response run');
       return next.handle().pipe(
         map((data) => {
           const response = context.switchToHttp().getResponse();
@@ -46,7 +44,6 @@ export class RespondCookieInterceptor implements NestInterceptor {
     }
 
     if (request) {
-      // console.log('request run');
       return next.handle();
     }
   }

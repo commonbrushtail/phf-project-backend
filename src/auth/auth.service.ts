@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { User } from 'src/entities/user.entity';
@@ -21,23 +21,32 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
   ) {
-    this.oauthClient = new OAuth2Client(configService.get('GOOGLE_CLIENT_ID'));
+    this.oauthClient = new OAuth2Client(
+      configService.get('GOOGLE_CLIENT_ID'),
+      configService.get('GOOGLE_SECRET'),
+      configService.get('GOOGLE_REDIRECT_URL'),
+    );
   }
 
   async verifyGoogleAuthToken(idToken: string) {
     try {
+      const tokens = await this.getTokensFromClientGoogleCode(idToken);
+      const { id_token } = tokens.tokens;
       const ticket = await this.oauthClient.verifyIdToken({
-        idToken,
+        idToken: id_token,
         audience: this.configService.get('GOOGLE_CLIENT_ID'),
       });
-
       const userInfo = ticket.getPayload();
-
       return this.transformGooglePayload(userInfo);
     } catch (e) {
       console.log(e, 'error');
       return null;
     }
+  }
+
+  async getTokensFromClientGoogleCode(code: string) {
+    const tokens = await this.oauthClient.getToken(code);
+    return tokens;
   }
 
   transformGooglePayload(payload: GoogleUserPayload): SocialUserPayload {

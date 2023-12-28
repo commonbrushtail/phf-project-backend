@@ -9,9 +9,9 @@ class GoogleAuthDto {
   @IsNotEmpty()
   @IsString()
   credential: string;
-  @IsNotEmpty()
-  @IsString()
-  clientId: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // clientId: string;
 }
 
 class EmailSignUpDto {
@@ -60,4 +60,4 @@ class EmailConfirmDto {
   token: string;
 }
 
-export { GoogleAuthDto, EmailSignUpDto, EmailSignInDto, EmailConfirmDto };
+export { EmailConfirmDto, EmailSignInDto, EmailSignUpDto, GoogleAuthDto };

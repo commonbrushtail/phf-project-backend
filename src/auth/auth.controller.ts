@@ -1,21 +1,21 @@
 import {
   Body,
   Controller,
-  Post,
   HttpException,
   HttpStatus,
+  Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import {
-  GoogleAuthDto,
-  EmailSignUpDto,
-  EmailSignInDto,
-  EmailConfirmDto,
-} from './dto/auth.dto';
-import { AuthService } from './auth.service';
-import { UsersService } from 'src/users/users.service';
 import { Public } from 'src/decorator/isPublic';
 import { MailService } from 'src/mail/mail.service';
+import { UsersService } from 'src/users/users.service';
+import { AuthService } from './auth.service';
+import {
+  EmailConfirmDto,
+  EmailSignInDto,
+  EmailSignUpDto,
+  GoogleAuthDto,
+} from './dto/auth.dto';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -53,11 +53,6 @@ export class AuthController {
             data: userSessionData,
             message: 'Google login successfully.',
           };
-
-          // throw new HttpException(
-          //   'You already signup with google, please sign in',
-          //   HttpStatus.UNAUTHORIZED,
-          // );
         }
       }
 
