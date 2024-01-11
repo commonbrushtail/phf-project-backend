@@ -36,7 +36,7 @@ export class AuthController {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
       const user = await this.userService.findUserByEmail(payload.email);
-
+      console.log(user)
       if (user) {
         const authMethod = await this.userService.getAuthMethods(user);
         if (!authMethod.google) {
@@ -55,7 +55,7 @@ export class AuthController {
           };
         }
       }
-
+      console.log('nqeqeqwe')
       const newUser =
         await this.authService.createUserFromGooglePayload(payload);
 

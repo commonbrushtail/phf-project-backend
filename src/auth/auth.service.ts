@@ -29,6 +29,11 @@ export class AuthService {
   }
 
   async verifyGoogleAuthToken(idToken: string) {
+    console.log(
+      this.configService.get('GOOGLE_CLIENT_ID'),
+      this.configService.get('GOOGLE_SECRET'),
+      this.configService.get('GOOGLE_REDIRECT_URL'),
+    )
     try {
       const tokens = await this.getTokensFromClientGoogleCode(idToken);
       const { id_token } = tokens.tokens;
@@ -37,6 +42,7 @@ export class AuthService {
         audience: this.configService.get('GOOGLE_CLIENT_ID'),
       });
       const userInfo = ticket.getPayload();
+      console.log(userInfo, 'userInfo');
       return this.transformGooglePayload(userInfo);
     } catch (e) {
       console.log(e, 'error');
@@ -45,7 +51,7 @@ export class AuthService {
   }
 
   async getTokensFromClientGoogleCode(code: string) {
-    const tokens = await this.oauthClient.getToken(code);
+    const tokens = await this.oauthClient.getAccessToken(code);
     return tokens;
   }
 
