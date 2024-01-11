@@ -29,11 +29,6 @@ export class AuthService {
   }
 
   async verifyGoogleAuthToken(idToken: string) {
-    console.log(
-      this.configService.get('GOOGLE_CLIENT_ID'),
-      this.configService.get('GOOGLE_SECRET'),
-      this.configService.get('GOOGLE_REDIRECT_URL'),
-    )
     try {
       const tokens = await this.getTokensFromClientGoogleCode(idToken);
       const { id_token } = tokens.tokens;
@@ -51,7 +46,7 @@ export class AuthService {
   }
 
   async getTokensFromClientGoogleCode(code: string) {
-    const tokens = await this.oauthClient.getAccessToken(code);
+    const tokens = await this.oauthClient.getToken(code);
     return tokens;
   }
 
