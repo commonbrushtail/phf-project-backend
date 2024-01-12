@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Public } from 'src/decorator/isPublic';
@@ -16,6 +17,7 @@ import {
   EmailSignUpDto,
   GoogleAuthDto,
 } from './dto/auth.dto';
+import { UserWithReqeust } from './interface/auth.interface';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -192,5 +194,23 @@ export class AuthController {
     } catch (e) {
       return e;
     }
+  }
+
+  @Post('check-user-login')
+  async checkUserLogin(@Req() req:UserWithReqeust) {
+    console.log(req)
+    try {
+      const userSessionData =
+        await this.authService.generateSessionDataForUser(req.user);
+
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'User login successfully.',
+      };
+    } catch (e) {
+      return e;
+    }
+
   }
 }
