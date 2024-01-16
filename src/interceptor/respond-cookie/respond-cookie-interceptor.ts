@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs';
+import { map,firstValueFrom } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -26,8 +26,10 @@ export class RespondCookieInterceptor implements NestInterceptor {
 
     if (response) {
       return next.handle().pipe(
-        map((data) => {
-          const response = context.switchToHttp().getResponse();
+        map(async (data) => {
+          if (data.data && data.data instanceof Promise) {
+            data.data = await data.data;
+          }
 
           response.cookie('access_token', data.data.access_token, {
             httpOnly: true,
@@ -36,8 +38,8 @@ export class RespondCookieInterceptor implements NestInterceptor {
             signed: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
           });
-          delete data.data.access_token;
 
+          delete data.data.access_token;
           return data;
         }),
       );

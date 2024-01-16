@@ -57,7 +57,7 @@ export class AuthController {
           };
         }
       }
-      console.log('nqeqeqwe')
+
       const newUser =
         await this.authService.createUserFromGooglePayload(payload);
 
@@ -147,6 +147,7 @@ export class AuthController {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
 
+    
       const userSessionData = this.authService.generateSessionDataForUser(user);
       return {
         status: 'success',
@@ -195,10 +196,8 @@ export class AuthController {
       return e;
     }
   }
-
   @Post('check-user-login')
-  async checkUserLogin(@Req() req:UserWithReqeust) {
-    console.log(req)
+  async checkUserLogin(@Req() req: UserWithReqeust) {
     try {
       const userSessionData =
         await this.authService.generateSessionDataForUser(req.user);
