@@ -38,7 +38,6 @@ import { RespondCookieInterceptor } from './interceptor/respond-cookie/respond-c
   providers: [
     AppService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_INTERCEPTOR, useClass: RespondCookieInterceptor },
   ],
 })
 export class AppModule {}

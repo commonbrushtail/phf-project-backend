@@ -8,43 +8,46 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  Id: string;
+  id: string;
 
   @Column({ unique: true, nullable: true })
-  Email: string;
+  email: string;
 
   @Column({ nullable: true })
-  Password: string;
+  password: string;
 
   @Column({ nullable: true })
-  Username: string;
+  username: string;
 
   @Column({ nullable: true })
-  Firstname: string;
+  firstname: string;
 
   @Column({ nullable: true })
-  Lastname: string;
+  lastname: string;
 
   @Column({ nullable: true })
-  GoogleId: boolean;
+  google_id: boolean;
 
   @Column({ nullable: true })
-  FacebookId: boolean;
+  facebook_id: boolean;
 
   @Column({ nullable: true })
-  EmailId: boolean;
+  email_id: boolean;
 
   @Column({ nullable: true })
-  Picture: string;
+  picture: string;
 
   @CreateDateColumn()
-  CreatedAt: string;
+  createdAt: string;
 
   @Column({ nullable: true })
-  IsGuest: boolean;
+  is_guest: boolean;
 
   @Column({ nullable: true })
-  IsEmailVerified: boolean;
+  is_email_verified: boolean;
+
+  @Column({ nullable: true })
+  refresh_token: string;
 
   getAuthMethods(): {
     google: boolean;
@@ -52,9 +55,9 @@ export class User {
     email: boolean;
   } {
     return {
-      google: !!this.GoogleId,
-      facebook: !!this.FacebookId,
-      email: !!this.EmailId,
+      google: !!this.google_id,
+      facebook: !!this.facebook_id,
+      email: !!this.email_id,
     };
   }
 }

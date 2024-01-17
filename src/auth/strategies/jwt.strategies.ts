@@ -23,7 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
   async validate(payload: JwtPayload) {
-    console.log(payload, 'payload')
     const userEmail = payload.sub;
     const user = await this.usersService.findUserByEmail(userEmail);
 
@@ -31,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException();
     }
 
-    if (user.EmailId && !user.IsEmailVerified) {
+    if (user.email_id && !user.is_email_verified) {
       throw new UnauthorizedException('Email is not verified');
     }
 

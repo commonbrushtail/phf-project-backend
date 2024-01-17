@@ -17,7 +17,7 @@ import {
   EmailSignUpDto,
   GoogleAuthDto,
 } from './dto/auth.dto';
-import { UserWithReqeust } from './interface/auth.interface';
+import { UserWithRequest } from './interface/auth.interface';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -135,7 +135,7 @@ export class AuthController {
 
       const passwordMatch = await this.userService.comparePassword(
         authObject.password,
-        user.Password,
+        user.password,
       );
 
       if (!passwordMatch) {
@@ -147,8 +147,13 @@ export class AuthController {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       }
 
+      if (user.email_id && !user.is_email_verified) {
+      
+        throw new HttpException('Email is not verified', HttpStatus.UNAUTHORIZED);
+      }
+
     
-      const userSessionData = this.authService.generateSessionDataForUser(user);
+      const userSessionData = await this.authService.generateSessionDataForUser(user);
       return {
         status: 'success',
         data: userSessionData,
@@ -167,7 +172,7 @@ export class AuthController {
     try {
       const updatedUser = await this.authService.handleConfirmEmail(token);
       const userSessionData =
-        this.authService.generateSessionDataForUser(updatedUser);
+        await this.authService.generateSessionDataForUser(updatedUser);
 
       return {
         status: 'success',
@@ -197,7 +202,7 @@ export class AuthController {
     }
   }
   @Post('check-user-login')
-  async checkUserLogin(@Req() req: UserWithReqeust) {
+  async checkUserLogin(@Req() req: UserWithRequest) {
     try {
       const userSessionData =
         await this.authService.generateSessionDataForUser(req.user);

@@ -9,6 +9,7 @@ import {
   SocialUserPayload,
   UserData,
   UserSessionData,
+  RefreshTokenPayload,
 } from './interface/auth.interface';
 
 import { JwtService } from '@nestjs/jwt';
@@ -63,14 +64,14 @@ export class AuthService {
 
   generateUserData(user: User): UserData {
     return {
-      id: user.Id,
-      email: user.Email,
-      facebookId: user.FacebookId,
-      googleId: user.GoogleId,
-      emailId: user.EmailId,
-      username: user.Username,
-      isGuest: user.IsGuest,
-      isEmailVerified: user.IsEmailVerified,
+      id: user.id,
+      email: user.email,
+      facebookId: user.facebook_id,
+      googleId: user.google_id,
+      emailId: user.email_id,
+      username: user.username,
+      isGuest: user.is_guest,
+      isEmailVerified: user.is_email_verified,
     };
   }
   generateJwtPayload(user: UserData): JwtPayload {
@@ -86,21 +87,39 @@ export class AuthService {
     }
   }
 
-  async generateJwtToken(jwtPayload: JwtPayload): Promise<string> {
+  async generateAccessToken(jwtPayload: JwtPayload): Promise<string> {
     try {
       const token = await this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get('JWT_SECRET'),
-        expiresIn: '30d',
+        expiresIn: '15m',
       });
       return token;
     } catch (e) {
       return e;
     }
   }
-  generateUserSessionData(userData: UserData, token: string): UserSessionData {
+
+  async generateRefreshToken(jwtPayload: JwtPayload): Promise<string> {
+    try {
+      const token = await this.jwtService.signAsync(jwtPayload, {
+        secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+        expiresIn: '7d',
+      });
+      return token;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  generateUserSessionData(
+    userData: UserData,
+    accessToken: string,
+    refreshToken: string,
+  ): UserSessionData {
     return {
       userData,
-      access_token: token,
+      access_token: accessToken,
+      refresh_token: refreshToken,
     };
   }
 
@@ -110,16 +129,33 @@ export class AuthService {
   }
 
   async generateSessionDataForUser(user: User): Promise<UserSessionData> {
-    const userData = this.generateUserData(user);
-    const jwtPayload = this.generateJwtPayload(userData);
-    const jwtToken = await this.generateJwtToken(jwtPayload);
-    return this.generateUserSessionData(userData, jwtToken);
+
+    const initialUserData = this.generateUserData(user);
+
+
+    const jwtPayload = this.generateJwtPayload(initialUserData);
+
+
+    const accessToken = await this.generateAccessToken(jwtPayload);
+    const refreshToken = await this.generateRefreshToken(jwtPayload);
+
+    const updatedUser = await this.usersService.updateRefreshToken(user, refreshToken);
+
+    const newUserData = this.generateUserData(updatedUser);
+
+    return this.generateUserSessionData(newUserData, accessToken, refreshToken);
+}
+    
+
+    
+
+    
   }
 
   generateConfirmationEmailWithJWT(user: User): string {
     const confirmationToken = this.jwtService.sign(
       {
-        email: user.Email,
+        email: user.email,
       },
       {
         secret: this.configService.get('JWT_SECRET'),
@@ -145,9 +181,11 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
 
-    user.IsEmailVerified = true;
+    user.is_email_verified = true;
     const newUserData = await this.usersService.updateUser(user);
 
     return newUserData;
   }
+
+
 }

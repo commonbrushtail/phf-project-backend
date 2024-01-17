@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { changeUsernameDto } from './dto/user.dto';
-import { UserWithReqeust } from 'src/auth/interface/auth.interface';
+import { UserWithRequest } from 'src/auth/interface/auth.interface';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -10,7 +10,7 @@ describe('UsersController', () => {
     user: {
       Id: jest.fn(),
     },
-  } as unknown as UserWithReqeust;
+  } as unknown as UserWithRequest;
   const payloadMock = {} as unknown as changeUsernameDto;
 
   beforeEach(async () => {

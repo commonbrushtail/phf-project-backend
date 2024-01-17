@@ -18,7 +18,7 @@ export class UsersService {
   async findUserByEmail(email: string) {
     try {
       const user = await this.userRepository.findOne({
-        where: { Email: email },
+        where: { email: email },
       });
       return user;
     } catch (e) {
@@ -28,7 +28,7 @@ export class UsersService {
   async findUserByUsername(username: string) {
     try {
       const user = await this.userRepository.findOne({
-        where: { Username: username },
+        where: { username: username },
       });
       return user;
     } catch (e) {
@@ -39,7 +39,7 @@ export class UsersService {
   async findUserById(id: string) {
     try {
       const user = await this.userRepository.findOne({
-        where: { Id: id },
+        where: { id: id },
       });
       return user;
     } catch (e) {
@@ -62,6 +62,18 @@ export class UsersService {
     }
   }
 
+  async hashRefreshToken(refreshToken: string): Promise<string> {
+    try {
+      const salt = await bcrypt.genSalt();
+      const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
+
+      return hashedRefreshToken;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  
+
   async createUser(user: Partial<User>): Promise<User> {
     try {
       return await this.userRepository.save(user);
@@ -73,13 +85,13 @@ export class UsersService {
 
   async updateUsername(user: User, payload: changeUsernameDto): Promise<User> {
     try {
-      if (user.Username === payload.newUsername) {
+      if (user.username === payload.newUsername) {
         throw new BadRequestException(
           'Your new username is the same as before',
         );
       }
 
-      user.Username = payload.newUsername;
+      user.username = payload.newUsername;
 
       return await this.userRepository.save(user);
     } catch (e) {
@@ -87,6 +99,17 @@ export class UsersService {
       throw e;
     }
   }
+
+  async updateRefreshToken(user: User, refreshToken: string): Promise<User> {
+    try {
+      user.refresh_token = await this.hashRefreshToken(refreshToken);
+      return await this.userRepository.save(user);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
   async updateUser(user: User): Promise<User> {
     try {
       return await this.userRepository.save(user);
@@ -100,10 +123,10 @@ export class UsersService {
     const { email, firstName, lastName, picture, provider } = userdata;
 
     const newUser: Partial<User> = {
-      Email: email,
-      Firstname: firstName,
-      Lastname: lastName,
-      Picture: picture,
+      email: email,
+      firstname: firstName,
+      lastname: lastName,
+      picture: picture,
       [`${provider}Id`]: true,
     };
 
@@ -114,11 +137,11 @@ export class UsersService {
     const { email, username, password } = userdata;
     const hashedPassword = await this.hashPassword(password);
     const newUser: Partial<User> = {
-      Email: email,
-      Username: username,
-      Password: hashedPassword,
-      EmailId: true,
-      IsEmailVerified: false,
+      email: email,
+      username: username,
+      password: hashedPassword,
+      email_id: true,
+      is_email_verified: false,
     };
 
     return await this.createUser(newUser);
@@ -138,9 +161,11 @@ export class UsersService {
 
   async handleCreateGuestUser() {
     const newUser: Partial<User> = {
-      IsGuest: true,
+      is_guest: true,
     };
 
     return await this.createUser(newUser);
   }
+
+
 }

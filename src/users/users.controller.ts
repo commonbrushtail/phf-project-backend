@@ -1,6 +1,6 @@
 import { Controller, Post, Req, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserWithReqeust } from 'src/auth/interface/auth.interface';
+import { UserWithRequest } from 'src/auth/interface/auth.interface';
 import { changeUsernameDto } from './dto/user.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { newUsernameResponse } from './interface/users.interface';
@@ -14,7 +14,7 @@ export class UsersController {
   @Post('change-username')
   async changeUsername(
     @Body() payload: changeUsernameDto,
-    @Req() req: UserWithReqeust,
+    @Req() req: UserWithRequest,
   ): Promise<newUsernameResponse> {
     try {
       const updatedUser = await this.usersService.updateUsername(

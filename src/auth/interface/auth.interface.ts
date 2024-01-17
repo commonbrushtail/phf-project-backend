@@ -37,11 +37,22 @@ export interface JwtPayload {
   id: string;
   iat: number;
 }
+
+export interface RefreshTokenPayload {
+  sub: string;
+  id: string;
+  iat: number;
+}
 export interface UserSessionData {
   userData: UserData;
   access_token: string;
+  refresh_token: string;
 }
 
-export interface UserWithReqeust extends Request {
+export interface UserWithRequest extends Request {
   user: User;
+}
+
+export interface RequestExtendExpress extends Request {
+  signedCookies: any;
 }
