@@ -4,19 +4,15 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { map,firstValueFrom } from 'rxjs';
+import { Observable, mergeMap } from 'rxjs';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
-export class RespondCookieInterceptor implements NestInterceptor {
+export class RespondCookieRefreshTokenInterceptor implements NestInterceptor {
   constructor(private reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const noCookieInterceptor = this.reflector.get<boolean>(
-      'noCookieInterceptor',
-      context.getHandler(),
-    );
+  
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
 
@@ -24,12 +20,12 @@ export class RespondCookieInterceptor implements NestInterceptor {
     if (response) {
       console.log(response,'response')
       return next.handle().pipe(
-        map(async (data) => {
+        mergeMap(async (data) => {
           if (data.data && data.data instanceof Promise) {
             data.data = await data.data;
           }
           
-          response.cookie('access_token', data.data.access_token, {
+          response.cookie('refresh_token', data.data.access_token, {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',

@@ -129,27 +129,21 @@ export class AuthService {
   }
 
   async generateSessionDataForUser(user: User): Promise<UserSessionData> {
-
     const initialUserData = this.generateUserData(user);
 
-
     const jwtPayload = this.generateJwtPayload(initialUserData);
-
 
     const accessToken = await this.generateAccessToken(jwtPayload);
     const refreshToken = await this.generateRefreshToken(jwtPayload);
 
-    const updatedUser = await this.usersService.updateRefreshToken(user, refreshToken);
+    const updatedUser = await this.usersService.updateRefreshToken(
+      user,
+      refreshToken,
+    );
 
     const newUserData = this.generateUserData(updatedUser);
 
     return this.generateUserSessionData(newUserData, accessToken, refreshToken);
-}
-    
-
-    
-
-    
   }
 
   generateConfirmationEmailWithJWT(user: User): string {
@@ -186,6 +180,4 @@ export class AuthService {
 
     return newUserData;
   }
-
-
 }

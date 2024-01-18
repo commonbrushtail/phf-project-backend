@@ -9,7 +9,6 @@ import { UsersModule } from './users/users.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/jwt.guard';
 import { MailModule } from './mail/mail.module';
-import { RespondCookieInterceptor } from './interceptor/respond-cookie/respond-cookie-interceptor';
 
 @Module({
   imports: [
