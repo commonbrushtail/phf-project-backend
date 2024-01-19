@@ -25,7 +25,7 @@ export class RespondCookieRefreshTokenInterceptor implements NestInterceptor {
             data.data = await data.data;
           }
           
-          response.cookie('refresh_token', data.data.access_token, {
+          response.cookie('refresh_token', data.data.refresh_token, {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
@@ -36,7 +36,7 @@ export class RespondCookieRefreshTokenInterceptor implements NestInterceptor {
 
           
 
-          delete data.data.access_token;
+          delete data.data.refresh_token;
           return data;
         }),
       );

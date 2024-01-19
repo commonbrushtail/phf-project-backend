@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   UnauthorizedException,
+  UseInterceptors
 } from '@nestjs/common';
 import { Public } from 'src/decorator/isPublic';
 import { MailService } from 'src/mail/mail.service';
@@ -18,6 +19,10 @@ import {
   GoogleAuthDto,
 } from './dto/auth.dto';
 import { UserWithRequest } from './interface/auth.interface';
+import { use } from 'passport';
+import { RespondCookieAccessTokenInterceptor } from 'src/interceptor/respond-cookie-access-token/respond-cookie-access-token-interceptor';
+import { RespondCookieRefreshTokenInterceptor } from 'src/interceptor/respond-cookie-refresh-token/respond-cookie-refresh-token.interceptor';
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -186,6 +191,8 @@ export class AuthController {
 
   @Public()
   @Post('guest-login')
+  @UseInterceptors(RespondCookieRefreshTokenInterceptor)
+  @UseInterceptors(RespondCookieAccessTokenInterceptor)
   async guestLogin() {
     try {
       const guestUser = await this.userService.handleCreateGuestUser();
