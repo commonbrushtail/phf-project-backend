@@ -6,7 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtPayload } from '../interface/auth.interface';
 import { AuthService } from '../auth.service';
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, 'AccessToken') {
   constructor(
     private configService: ConfigService,
     private usersService: UsersService,
@@ -23,8 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
   async validate(payload: JwtPayload) {
-    const userEmail = payload.sub;
-    const user = await this.usersService.findUserByEmail(userEmail);
+    const userId = payload.sub;
+    const user = await this.usersService.findUserById(userId);
+
+    console.log(payload)
 
     if (!user) {
       throw new UnauthorizedException();
@@ -33,6 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (user.email_id && !user.is_email_verified) {
       throw new UnauthorizedException('Email is not verified');
     }
+    
 
     return user;
   }

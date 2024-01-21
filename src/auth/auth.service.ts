@@ -77,9 +77,10 @@ export class AuthService {
   generateJwtPayload(user: UserData): JwtPayload {
     try {
       const payload: JwtPayload = {
-        sub: user.email,
-        id: user.id,
-        iat: Date.now(),
+        sub: user.id,
+        email: user.email,
+        
+  
       };
       return payload;
     } catch (e) {
@@ -91,8 +92,10 @@ export class AuthService {
     try {
       const token = await this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get('JWT_SECRET'),
-        expiresIn: '15m',
+        expiresIn: '5m'
       });
+
+      console.log(token, 'token')
       return token;
     } catch (e) {
       return e;
@@ -103,7 +106,7 @@ export class AuthService {
     try {
       const token = await this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-        expiresIn: '7d',
+        expiresIn: '7d'
       });
       return token;
     } catch (e) {
@@ -129,21 +132,21 @@ export class AuthService {
   }
 
   async generateSessionDataForUser(user: User): Promise<UserSessionData> {
-    const initialUserData = this.generateUserData(user);
+    const userData = this.generateUserData(user);
 
-    const jwtPayload = this.generateJwtPayload(initialUserData);
+    const jwtPayload = this.generateJwtPayload(userData);
+ 
 
     const accessToken = await this.generateAccessToken(jwtPayload);
     const refreshToken = await this.generateRefreshToken(jwtPayload);
-
     const updatedUser = await this.usersService.updateRefreshToken(
       user,
       refreshToken,
     );
 
-    const newUserData = this.generateUserData(updatedUser);
 
-    return this.generateUserSessionData(newUserData, accessToken, refreshToken);
+
+    return this.generateUserSessionData(userData, accessToken, refreshToken);
   }
 
   generateConfirmationEmailWithJWT(user: User): string {
@@ -180,4 +183,18 @@ export class AuthService {
 
     return newUserData;
   }
+
+  async verifyRefreshToken(refreshToken: string, user: User) {
+    const decodedToken = await this.jwtService.verify(refreshToken, {
+      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+    });
+
+    const { sub } = decodedToken as RefreshTokenPayload;
+    if (sub !== user.id) {
+      return false;
+    }
+
+    return true;
+  }
+
 }

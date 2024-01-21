@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   UnauthorizedException,
+  UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { Public } from 'src/decorator/isPublic';
@@ -22,7 +23,8 @@ import { UserWithRequest } from './interface/auth.interface';
 import { use } from 'passport';
 import { RespondCookieAccessTokenInterceptor } from 'src/interceptor/respond-cookie-access-token/respond-cookie-access-token-interceptor';
 import { RespondCookieRefreshTokenInterceptor } from 'src/interceptor/respond-cookie-refresh-token/respond-cookie-refresh-token.interceptor';
-
+import { RefreshToken } from 'src/decorator/refreshToken';
+import { AuthGuard } from '@nestjs/passport';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -189,6 +191,11 @@ export class AuthController {
     }
   }
 
+  @Post('logout')
+  async test(){
+    return 'test'
+  }
+
   @Public()
   @Post('guest-login')
   @UseInterceptors(RespondCookieRefreshTokenInterceptor)
@@ -224,4 +231,24 @@ export class AuthController {
     }
 
   }
+  @RefreshToken()
+  @UseGuards(AuthGuard('RefreshToken'))
+  @UseInterceptors(RespondCookieRefreshTokenInterceptor)
+  @UseInterceptors(RespondCookieAccessTokenInterceptor)
+  @Post('refresh-token')
+  async refreshToken(@Req() req: UserWithRequest) {
+    try {
+      const userSessionData =
+        await this.authService.generateSessionDataForUser(req.user);
+
+      return {
+        status: 'success',
+        data: userSessionData,
+        message: 'Refresh token successfully.',
+      };
+    } catch (e) {
+      return e;
+    }
+  }
+
 }

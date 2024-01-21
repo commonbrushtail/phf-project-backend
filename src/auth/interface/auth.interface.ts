@@ -34,14 +34,16 @@ export interface UserData {
 
 export interface JwtPayload {
   sub: string;
-  id: string;
-  iat: number;
+  email: string;
+  
+ 
 }
 
 export interface RefreshTokenPayload {
   sub: string;
   id: string;
   iat: number;
+  exp: number;
 }
 export interface UserSessionData {
   userData: UserData;

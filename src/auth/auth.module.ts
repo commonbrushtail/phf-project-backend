@@ -7,9 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { UsersService } from 'src/users/users.service';
-import { JwtStrategy } from './strategies/jwt.strategies';
+import { AccessTokenStrategy } from './strategies/accessToken.strategies';
 import { MailService } from 'src/mail/mail.service';
 import { NodemailerProvider } from 'src/mail/nodemailer.provider';
+import { RefreshTokenStrategy } from './strategies/refreshToken.strategies';
 @Module({
   imports: [
     UsersModule,
@@ -24,9 +25,10 @@ import { NodemailerProvider } from 'src/mail/nodemailer.provider';
   providers: [
     AuthService,
     UsersService,
-    JwtStrategy,
+    AccessTokenStrategy,
     MailService,
     NodemailerProvider,
+    RefreshTokenStrategy
   ],
 })
 export class AuthModule {}
